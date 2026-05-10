@@ -1,0 +1,18 @@
+# Node
+node_modules/
+
+# Vue
+dist/
+
+# Java
+target/
+
+# IDE
+.idea/
+.vscode/
+
+# Env
+.env
+
+# Logs
+*.log
