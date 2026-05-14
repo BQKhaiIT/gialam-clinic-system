@@ -2,17 +2,24 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/gialam_clinic
     username: postgres
-    password:
+    password: 123456
 
   jpa:
     hibernate:
       ddl-auto: update
 
     show-sql: true
-
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
 
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+
 server:
   port: 8080
+
+jwt:
+  secret: your_super_secret_jwt_key_123456789123456789
+  expiration: 86400000
