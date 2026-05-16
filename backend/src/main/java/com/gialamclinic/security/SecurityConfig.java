@@ -2,6 +2,7 @@ package com.gialamclinic.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.*;
@@ -33,11 +34,54 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(
                         auth->auth
-
+                                //Auth
                                 .requestMatchers(
                                         "/api/v1/auth/**"
                                 )
                                 .permitAll()
+                                // Patient APIs
+                                .requestMatchers(HttpMethod.GET,
+                                        "/api/v1/patients/**")
+                                .hasAnyRole("ADMIN","STAFF","DOCTOR")
+
+                                .requestMatchers(HttpMethod.POST,
+                                        "/api/v1/patients/**")
+                                .hasAnyRole("ADMIN","STAFF")
+
+                                .requestMatchers(HttpMethod.PUT,
+                                        "/api/v1/patients/**")
+                                .hasAnyRole("ADMIN","STAFF")
+
+                                .requestMatchers(HttpMethod.DELETE,
+                                        "/api/v1/patients/**")
+                                .hasRole("ADMIN")
+
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/api/v1/appointments/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "STAFF"
+                                )
+
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/v1/appointments/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "STAFF",
+                                        "DOCTOR"
+                                )
+                                .requestMatchers(
+                                        HttpMethod.DELETE,
+                                        "/api/v1/appointments/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "STAFF"
+                                )
 
                                 .anyRequest()
                                 .authenticated()
