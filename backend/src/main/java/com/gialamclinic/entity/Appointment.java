@@ -15,12 +15,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Appointment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Appointment extends BaseEntity {
 
     // PATIENT
 
@@ -72,29 +67,12 @@ public class Appointment {
     private AppointmentStatus status;
 
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "is_activate")
-    private Boolean isActive = true;
-
     @PrePersist
     public void prePersist(){
-
-        this.createdAt = LocalDateTime.now();
-
-        if(this.status == null){
-
+        super.prePersist();
+        if (this.status == null) {
             this.status = AppointmentStatus.PENDING;
-
         }
-
-        if (this.isActive == null){
-            this.isActive = true;
-        }
-
     }
-
-
 
 }

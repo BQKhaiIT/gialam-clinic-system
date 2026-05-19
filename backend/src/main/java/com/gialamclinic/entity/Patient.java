@@ -13,11 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Patient {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Patient extends BaseEntity {
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -35,20 +31,5 @@ public class Patient {
 
     @Column(columnDefinition = "TEXT")
     private String allergies;
-
-    @Column(name = "is_active")
-    private Boolean isActive = true;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-
-        if (this.isActive == null) {
-            this.isActive = true;
-        }
-    }
 
 }

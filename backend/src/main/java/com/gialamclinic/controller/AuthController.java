@@ -2,7 +2,7 @@ package com.gialamclinic.controller;
 
 import com.gialamclinic.dto.auth.LoginRequest;
 import com.gialamclinic.dto.auth.LoginResponse;
-import com.gialamclinic.response.ApiResponse;
+import com.gialamclinic.dto.response.ApiResponse;
 import com.gialamclinic.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

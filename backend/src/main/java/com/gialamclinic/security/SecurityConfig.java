@@ -83,6 +83,25 @@ public class SecurityConfig {
                                         "STAFF"
                                 )
 
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/api/v1/medical-records/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "DOCTOR"
+                                )
+
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/v1/medical-records/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "DOCTOR",
+                                        "STAFF"
+                                )
+
                                 .anyRequest()
                                 .authenticated()
                 )
