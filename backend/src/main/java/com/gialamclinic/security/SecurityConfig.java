@@ -102,6 +102,42 @@ public class SecurityConfig {
                                         "STAFF"
                                 )
 
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/api/v1/medicines/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "STAFF"
+                                )
+
+                                .requestMatchers(
+                                        HttpMethod.PUT,
+                                        "/api/v1/medicines/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "STAFF"
+                                )
+
+                                .requestMatchers(
+                                        HttpMethod.DELETE,
+                                        "/api/v1/medicines/**"
+                                )
+                                .hasRole(
+                                        "ADMIN"
+                                )
+
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/v1/medicines/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "STAFF",
+                                        "DOCTOR"
+                                )
+
                                 .anyRequest()
                                 .authenticated()
                 )
