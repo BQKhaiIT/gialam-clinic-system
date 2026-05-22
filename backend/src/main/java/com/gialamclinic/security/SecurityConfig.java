@@ -138,6 +138,15 @@ public class SecurityConfig {
                                         "DOCTOR"
                                 )
 
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/api/v1/prescriptions/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "DOCTOR"
+                                )
+
                                 .anyRequest()
                                 .authenticated()
                 )
