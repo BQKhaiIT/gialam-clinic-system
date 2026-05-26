@@ -1,8 +1,11 @@
 package com.gialamclinic.exception;
 
 import com.gialamclinic.dto.response.ApiResponse;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +14,22 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private ResponseEntity<ApiResponse<Object>> buildResponse(
+            HttpStatus status,
+            String message,
+            Object data
+    ) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message(message)
+                .data(data)
+                .build();
+
+        return ResponseEntity
+                .status(status)
+                .body(response);
+    }
 
     // NOT FOUND
 
@@ -21,17 +40,45 @@ public class GlobalExceptionHandler {
     handleNotFound(
             ResourceNotFoundException ex
     ){
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                null
+        );
+    }
 
-        ApiResponse<Object> response =
-                ApiResponse.builder()
-                        .success(false)
-                        .message(ex.getMessage())
-                        .data(null)
-                        .build();
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(response);
+    // BAD REQUEST
+
+    @ExceptionHandler(
+            BadRequestException.class
+    )
+    public ResponseEntity<ApiResponse<Object>>
+    handleBadRequest(
+            BadRequestException ex
+    ){
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                null
+        );
+    }
+
+
+    // CONFLICT
+
+    @ExceptionHandler(
+            ConflictException.class
+    )
+    public ResponseEntity<ApiResponse<Object>>
+    handleConflict(
+            ConflictException ex
+    ){
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                ex.getMessage(),
+                null
+        );
     }
 
 
@@ -59,16 +106,72 @@ public class GlobalExceptionHandler {
 
                 );
 
-        ApiResponse<Object> response =
-                ApiResponse.builder()
-                        .success(false)
-                        .message("Validation failed")
-                        .data(errors)
-                        .build();
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Validation failed",
+                errors
+        );
+    }
 
-        return ResponseEntity
-                .badRequest()
-                .body(response);
+
+    // CONSTRAINT VIOLATION
+
+    @ExceptionHandler(
+            ConstraintViolationException.class
+    )
+    public ResponseEntity<ApiResponse<Object>>
+    handleConstraintViolation(
+            ConstraintViolationException ex
+    ){
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getConstraintViolations()
+                .forEach(violation ->
+                        errors.put(
+                                violation.getPropertyPath().toString(),
+                                violation.getMessage()
+                        )
+                );
+
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Validation failed",
+                errors
+        );
+    }
+
+
+    // INVALID BODY
+
+    @ExceptionHandler(
+            HttpMessageNotReadableException.class
+    )
+    public ResponseEntity<ApiResponse<Object>>
+    handleUnreadableMessage(
+            HttpMessageNotReadableException ex
+    ){
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Request body is invalid or malformed",
+                null
+        );
+    }
+
+
+    // DATA INTEGRITY
+
+    @ExceptionHandler(
+            DataIntegrityViolationException.class
+    )
+    public ResponseEntity<ApiResponse<Object>>
+    handleDataIntegrityViolation(
+            DataIntegrityViolationException ex
+    ){
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                "Request violates data integrity constraints",
+                null
+        );
     }
 
 
@@ -80,16 +183,11 @@ public class GlobalExceptionHandler {
             Exception ex
     ){
 
-        ApiResponse<Object> response =
-                ApiResponse.builder()
-                        .success(false)
-                        .message(ex.getMessage())
-                        .data(null)
-                        .build();
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(response);
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex.getMessage(),
+                null
+        );
     }
 
 }

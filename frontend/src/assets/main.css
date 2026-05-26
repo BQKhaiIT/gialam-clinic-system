@@ -1,0 +1,146 @@
+@import 'tailwindcss';
+
+:root {
+  --color-primary: #8dbcc7;
+  --color-secondary: #a4ccd9;
+  --color-background: #c4e1e6;
+  --color-card-highlight: #ebffd8;
+  --color-text: #1f2937;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-success: #22c55e;
+  --color-surface: #f6fbfc;
+  --shadow-card: 0 14px 40px rgba(69, 102, 112, 0.08);
+  --shadow-hover: 0 18px 48px rgba(69, 102, 112, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--color-text);
+  background:
+    radial-gradient(circle at top right, rgba(141, 188, 199, 0.22), transparent 24%),
+    linear-gradient(180deg, #edf7f9 0%, #e5f0f4 48%, #f3f8fb 100%);
+}
+
+body.dashboard-dark {
+  --color-text: #e5eef2;
+  --color-surface: #14242a;
+  --color-background: #173038;
+  background:
+    radial-gradient(circle at top right, rgba(141, 188, 199, 0.2), transparent 24%),
+    linear-gradient(180deg, #102028 0%, #132730 48%, #0e1a20 100%);
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.dashboard-card {
+  border: 1px solid rgba(141, 188, 199, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(14px);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+body.dashboard-dark .dashboard-card {
+  background: rgba(20, 36, 42, 0.88);
+  border-color: rgba(164, 204, 217, 0.12);
+}
+
+.dashboard-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(141, 188, 199, 0.4);
+}
+
+.panel-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.glass-input {
+  border: 1px solid rgba(141, 188, 199, 0.45);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+body.dashboard-dark .glass-input {
+  background: rgba(20, 36, 42, 0.7);
+  color: #e5eef2;
+}
+
+.glass-input:focus-within,
+.glass-input:focus {
+  outline: none;
+  border-color: rgba(141, 188, 199, 0.9);
+  box-shadow: 0 0 0 4px rgba(141, 188, 199, 0.18);
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(164, 204, 217, 0.16) 25%,
+    rgba(164, 204, 217, 0.34) 50%,
+    rgba(164, 204, 217, 0.16) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.24s ease;
+}
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.table > :not(caption) > * > * {
+  background: transparent;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

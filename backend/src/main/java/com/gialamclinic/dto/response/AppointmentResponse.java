@@ -1,6 +1,7 @@
 package com.gialamclinic.dto.response;
 
 import com.gialamclinic.enums.AppointmentStatus;
+import com.gialamclinic.enums.DoctorStatus;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -20,6 +21,11 @@ public class AppointmentResponse {
 
     private Long doctorId;
     private String doctorName;
+    private String doctorSpecialization;
+    private String doctorDepartment;
+    private String doctorPhone;
+    private String doctorEmail;
+    private DoctorStatus doctorStatus;
 
     private LocalDate appointmentDate;
 

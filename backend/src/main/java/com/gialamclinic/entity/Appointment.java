@@ -34,7 +34,7 @@ public class Appointment extends BaseEntity {
             name = "doctor_id",
             nullable = false
     )
-    private User doctor;
+    private DoctorEntity doctor;
 
 
     // CREATED BY

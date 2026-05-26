@@ -1,11 +1,13 @@
 package com.gialamclinic.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.*;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -21,8 +23,10 @@ public class SecurityConfig {
 
         return http
 
+                .cors(Customizer.withDefaults())
+
                 .csrf(
-                        csrf->csrf.disable()
+                        csrf -> csrf.disable()
                 )
 
                 .sessionManagement(
@@ -34,109 +38,29 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(
                         auth->auth
+                                .requestMatchers(
+                                        HttpMethod.OPTIONS,
+                                        "/**"
+                                )
+                                .permitAll()
                                 //Auth
                                 .requestMatchers(
                                         "/api/v1/auth/**"
                                 )
                                 .permitAll()
-                                // Patient APIs
-                                .requestMatchers(HttpMethod.GET,
-                                        "/api/v1/patients/**")
-                                .hasAnyRole("ADMIN","STAFF","DOCTOR")
-
-                                .requestMatchers(HttpMethod.POST,
-                                        "/api/v1/patients/**")
-                                .hasAnyRole("ADMIN","STAFF")
-
-                                .requestMatchers(HttpMethod.PUT,
-                                        "/api/v1/patients/**")
-                                .hasAnyRole("ADMIN","STAFF")
-
-                                .requestMatchers(HttpMethod.DELETE,
-                                        "/api/v1/patients/**")
-                                .hasRole("ADMIN")
-
                                 .requestMatchers(
-                                        HttpMethod.POST,
-                                        "/api/v1/appointments/**"
-                                )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "STAFF"
-                                )
-
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/v1/appointments/**"
-                                )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "STAFF",
-                                        "DOCTOR"
-                                )
-                                .requestMatchers(
-                                        HttpMethod.DELETE,
-                                        "/api/v1/appointments/**"
-                                )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "STAFF"
-                                )
-
-                                .requestMatchers(
-                                        HttpMethod.POST,
+                                        "/doctors/**",
+                                        "/patients/**",
+                                        "/appointments/**",
+                                        "/medicines/**",
+                                        "/medical-records/**",
+                                        "/api/v1/doctors/**",
+                                        "/api/v1/patients/**",
+                                        "/api/v1/appointments/**",
+                                        "/api/v1/medicines/**",
                                         "/api/v1/medical-records/**"
                                 )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "DOCTOR"
-                                )
-
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/v1/medical-records/**"
-                                )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "DOCTOR",
-                                        "STAFF"
-                                )
-
-                                .requestMatchers(
-                                        HttpMethod.POST,
-                                        "/api/v1/medicines/**"
-                                )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "STAFF"
-                                )
-
-                                .requestMatchers(
-                                        HttpMethod.PUT,
-                                        "/api/v1/medicines/**"
-                                )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "STAFF"
-                                )
-
-                                .requestMatchers(
-                                        HttpMethod.DELETE,
-                                        "/api/v1/medicines/**"
-                                )
-                                .hasRole(
-                                        "ADMIN"
-                                )
-
-                                .requestMatchers(
-                                        HttpMethod.GET,
-                                        "/api/v1/medicines/**"
-                                )
-                                .hasAnyRole(
-                                        "ADMIN",
-                                        "STAFF",
-                                        "DOCTOR"
-                                )
+                                .permitAll()
 
                                 .requestMatchers(
                                         HttpMethod.POST,

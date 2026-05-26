@@ -31,6 +31,26 @@ public class AppointmentMapper {
                         appointment.getDoctor().getFullName()
                 )
 
+                .doctorSpecialization(
+                        appointment.getDoctor().getSpecialization()
+                )
+
+                .doctorDepartment(
+                        appointment.getDoctor().getDepartment()
+                )
+
+                .doctorPhone(
+                        appointment.getDoctor().getPhone()
+                )
+
+                .doctorEmail(
+                        appointment.getDoctor().getEmail()
+                )
+
+                .doctorStatus(
+                        appointment.getDoctor().getStatus()
+                )
+
                 .appointmentDate(
                         appointment.getAppointmentDate()
                 )
