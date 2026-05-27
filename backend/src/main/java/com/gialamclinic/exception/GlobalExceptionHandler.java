@@ -163,15 +163,36 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(
             DataIntegrityViolationException.class
     )
-    public ResponseEntity<ApiResponse<Object>>
-    handleDataIntegrityViolation(
+
+    public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolation(
+
             DataIntegrityViolationException ex
+
     ){
-        return buildResponse(
-                HttpStatus.CONFLICT,
-                "Request violates data integrity constraints",
-                null
-        );
+
+        ex.printStackTrace();
+
+        return ResponseEntity
+                .status(409)
+                .body(
+
+                        ApiResponse.builder()
+
+                                .success(false)
+
+                                .message(
+
+                                        ex.getMostSpecificCause()
+                                                .getMessage()
+
+                                )
+
+                                .data(null)
+
+                                .build()
+
+                );
+
     }
 
 
@@ -189,5 +210,7 @@ public class GlobalExceptionHandler {
                 null
         );
     }
+
+
 
 }

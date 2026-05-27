@@ -111,22 +111,33 @@ const validateForm = () => {
 }
 
 const handleSubmit = () => {
-  if (props.loading) {
-    return
-  }
 
-  if (!validateForm()) {
-    return
-  }
+ if (props.loading) return
 
-  emit('submit', {
-    patientId: Number(form.patientId),
-    doctorId: Number(form.doctorId),
-    appointmentDate: form.appointmentDate,
-    appointmentTime: form.appointmentTime,
-    reason: form.reason.trim(),
-    notes: form.notes.trim(),
-  })
+ if (!validateForm()) return
+
+ emit('submit', {
+
+    patientId:
+      Number(form.patientId),
+
+    doctorId:
+      Number(form.doctorId),
+
+    appointmentDate:
+      form.appointmentDate,
+
+    appointmentTime:
+      form.appointmentTime,
+
+    reason:
+      form.reason.trim(),
+
+    notes:
+      form.notes.trim(),
+
+ })
+
 }
 </script>
 

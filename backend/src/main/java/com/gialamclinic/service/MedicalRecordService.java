@@ -22,28 +22,137 @@ public class MedicalRecordService {
     private final MedicalRecordMapper mapper;
 
     //CREATE
-    public MedicalRecordResponse create(MedicalRecordRequest request) {
-        Appointment appointment = appointmentRepo.findById(request.getAppointmentId()).orElseThrow(()->new ResourceNotFoundException("Appointment not found"));
+    public MedicalRecordResponse create(
+            MedicalRecordRequest request
+    ) {
 
-        //BUSINESS VALIDATION
+        Appointment appointment =
+                appointmentRepo
+                        .findById(
+                                request.getAppointmentId()
+                        )
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Appointment not found"
+                                )
+                        );
+
+        // CHẶN TẠO TRÙNG
+
         if (
-                appointment.getStatus()!=AppointmentStatus.COMPLETED
+                medicalRecordRepo
+                        .existsByAppointmentId(
+                                appointment.getId()
+                        )
         ) {
-            throw new BadRequestException("Medical record can only be created when appointment is COMPLETED");
+
+            throw new BadRequestException(
+                    "Medical record already exists"
+            );
+
         }
-        //USER LOGIN
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User doctor = userRepo.findByUsername(username).orElseThrow(()->new ResourceNotFoundException("Doctor not found"));
-        MedicalRecord medicalRecord = MedicalRecord.builder()
-                .appointment(appointment)
-                .patient(appointment.getPatient())
-                .doctor(doctor)
-                .diagnosis(request.getDiagnosis())
-                .treatment(request.getTreatment())
-                .notes(request.getNotes())
-                .build();
-        medicalRecord = medicalRecordRepo.save(medicalRecord);
-        return mapper.toResponse(medicalRecord);
+
+        // CHỈ CHO PENDING HOẶC IN_PROGRESS
+
+        if (
+
+                appointment.getStatus()
+                        != AppointmentStatus.PENDING
+
+        ) {
+
+            throw new BadRequestException(
+
+                    "Only pending appointments can create medical record"
+
+            );
+
+        }
+
+        String username =
+
+                SecurityContextHolder
+
+                        .getContext()
+
+                        .getAuthentication()
+
+                        .getName();
+
+        User doctor =
+
+                userRepo
+
+                        .findByUsername(
+                                username
+                        )
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+
+                                        "Doctor not found"
+
+                                )
+
+                        );
+
+        MedicalRecord medicalRecord =
+
+                MedicalRecord.builder()
+
+                        .appointment(
+                                appointment
+                        )
+
+                        .patient(
+                                appointment.getPatient()
+                        )
+
+                        .doctor(
+                                doctor
+                        )
+
+                        .diagnosis(
+                                request.getDiagnosis()
+                        )
+
+                        .treatment(
+                                request.getTreatment()
+                        )
+
+                        .notes(
+                                request.getNotes()
+                        )
+
+                        .build();
+
+        medicalRecord =
+
+                medicalRecordRepo.save(
+                        medicalRecord
+                );
+
+        // AUTO COMPLETE
+
+        appointment.setStatus(
+
+                AppointmentStatus.COMPLETED
+
+        );
+
+        appointmentRepo.save(
+
+                appointment
+
+        );
+
+        return mapper.toResponse(
+
+                medicalRecord
+
+        );
+
     }
     //GET ALL
     public Page<MedicalRecordResponse> getAll(int page, int size) {

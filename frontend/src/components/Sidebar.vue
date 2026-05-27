@@ -1,5 +1,6 @@
 <script setup>
 import { HeartPulse } from '@lucide/vue'
+import { logout } from '@/api/authApi'
 import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -28,11 +29,24 @@ const isActiveItem = (item) => {
 }
 
 const navigate = async (item) => {
+  if (item.action === 'logout') {
+    return handleLogout()
+  }
+
   const targetPath = item.to
 
   if (targetPath && route.path !== targetPath) {
     await router.push(targetPath)
   }
+
+  if (props.isOpen && window.innerWidth < 1024) {
+    emit('close')
+  }
+}
+const handleLogout = async () => {
+  logout()
+
+  await router.replace('/login')
 
   if (props.isOpen && window.innerWidth < 1024) {
     emit('close')

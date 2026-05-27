@@ -205,8 +205,12 @@ const handleSubmit = () => {
         v-if="show"
         class="fixed inset-0 z-[70] flex items-center justify-center overflow-x-hidden bg-slate-900/45 px-4 py-4 backdrop-blur-[2px] sm:px-6 sm:py-6"
       >
-        <div class="dashboard-card box-border w-full max-w-[980px] overflow-hidden overflow-x-hidden">
-          <div class="flex items-start justify-between border-b border-slate-200/70 px-5 py-5 sm:px-6">
+        <div
+          class="dashboard-card box-border w-full max-w-[980px] overflow-hidden overflow-x-hidden"
+        >
+          <div
+            class="flex items-start justify-between border-b border-slate-200/70 px-5 py-5 sm:px-6"
+          >
             <div>
               <h2 class="panel-title mb-1 text-slate-900">{{ title }}</h2>
               <p class="mb-0 text-sm text-slate-500">
@@ -227,102 +231,140 @@ const handleSubmit = () => {
               <div class="sm:col-span-2">
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">Full Name</label>
                 <div class="glass-input relative">
-                  <UserRound class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <UserRound
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     v-model="form.fullName"
                     type="text"
                     class="block h-[46px] w-full border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   />
                 </div>
-                <p v-if="errors.fullName" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.fullName }}</p>
+                <p v-if="errors.fullName" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.fullName }}
+                </p>
               </div>
 
               <div>
-                <label class="mb-1.5 block text-sm font-semibold text-slate-700">Specialization</label>
+                <label class="mb-1.5 block text-sm font-semibold text-slate-700"
+                  >Specialization</label
+                >
                 <div class="glass-input relative">
-                  <Stethoscope class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Stethoscope
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     v-model="form.specialization"
                     type="text"
                     class="block h-[46px] w-full border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   />
                 </div>
-                <p v-if="errors.specialization" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.specialization }}</p>
+                <p v-if="errors.specialization" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.specialization }}
+                </p>
               </div>
 
               <div>
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">Department</label>
                 <div class="glass-input relative">
-                  <Building2 class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Building2
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     v-model="form.department"
                     type="text"
                     class="block h-[46px] w-full border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   />
                 </div>
-                <p v-if="errors.department" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.department }}</p>
+                <p v-if="errors.department" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.department }}
+                </p>
               </div>
 
               <div>
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">Phone</label>
                 <div class="glass-input relative">
-                  <Phone class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Phone
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     v-model="form.phone"
                     type="text"
                     class="block h-[46px] w-full border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   />
                 </div>
-                <p v-if="errors.phone" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.phone }}</p>
+                <p v-if="errors.phone" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.phone }}
+                </p>
               </div>
 
               <div>
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">Email</label>
                 <div class="glass-input relative">
-                  <Mail class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Mail
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     v-model="form.email"
                     type="email"
                     class="block h-[46px] w-full border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   />
                 </div>
-                <p v-if="errors.email" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.email }}</p>
+                <p v-if="errors.email" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.email }}
+                </p>
               </div>
 
               <div>
-                <label class="mb-1.5 block text-sm font-semibold text-slate-700">License Number</label>
+                <label class="mb-1.5 block text-sm font-semibold text-slate-700"
+                  >License Number</label
+                >
                 <div class="glass-input relative">
-                  <ShieldCheck class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <ShieldCheck
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     v-model="form.licenseNumber"
                     type="text"
                     class="block h-[46px] w-full border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   />
                 </div>
-                <p v-if="errors.licenseNumber" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.licenseNumber }}</p>
+                <p v-if="errors.licenseNumber" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.licenseNumber }}
+                </p>
               </div>
 
               <div>
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">Gender</label>
                 <div class="glass-input relative">
-                  <Users class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Users
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <select
                     v-model="form.gender"
                     class="block h-[46px] w-full appearance-none border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   >
                     <option value="" disabled>Select gender</option>
-                    <option v-for="option in genderOptions" :key="option.value" :value="option.value">
+                    <option
+                      v-for="option in genderOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
                       {{ option.label }}
                     </option>
                   </select>
                 </div>
-                <p v-if="errors.gender" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.gender }}</p>
+                <p v-if="errors.gender" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.gender }}
+                </p>
               </div>
 
               <div>
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">DOB</label>
                 <div class="glass-input relative">
-                  <CalendarDays class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <CalendarDays
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <input
                     v-model="form.dob"
                     type="date"
@@ -335,30 +377,42 @@ const handleSubmit = () => {
               <div>
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">Status</label>
                 <div class="glass-input relative">
-                  <Activity class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Activity
+                    class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  />
                   <select
                     v-model="form.status"
                     class="block h-[46px] w-full appearance-none border-0 bg-transparent pl-11 pr-4 text-sm text-slate-700 focus:outline-none"
                   >
-                    <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                    <option
+                      v-for="option in statusOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
                       {{ option.label }}
                     </option>
                   </select>
                 </div>
-                <p v-if="errors.status" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.status }}</p>
+                <p v-if="errors.status" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.status }}
+                </p>
               </div>
 
               <div class="sm:col-span-2">
                 <label class="mb-1.5 block text-sm font-semibold text-slate-700">Address</label>
                 <div class="glass-input relative">
-                  <MapPin class="pointer-events-none absolute left-4 top-4 h-4 w-4 text-slate-400" />
+                  <MapPin
+                    class="pointer-events-none absolute left-4 top-4 h-4 w-4 text-slate-400"
+                  />
                   <textarea
                     v-model="form.address"
                     rows="3"
                     class="block w-full resize-none border-0 bg-transparent px-4 pb-3 pl-11 pt-3 text-sm text-slate-700 focus:outline-none"
                   ></textarea>
                 </div>
-                <p v-if="errors.address" class="mb-0 mt-1.5 text-sm text-[#C2414E]">{{ errors.address }}</p>
+                <p v-if="errors.address" class="mb-0 mt-1.5 text-sm text-[#C2414E]">
+                  {{ errors.address }}
+                </p>
               </div>
             </div>
           </div>

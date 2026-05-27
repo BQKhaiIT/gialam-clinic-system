@@ -7,4 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Long> {
     Page<MedicalRecord> findByPatientIdAndIsActiveTrue (Long patientId, Pageable pageable);
+    boolean existsByAppointmentId(
+            Long appointmentId
+    );
 }

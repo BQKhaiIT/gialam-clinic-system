@@ -28,13 +28,25 @@ public interface DoctorRepository extends JpaRepository<DoctorEntity, Long> {
     boolean existsByLicenseNumberIgnoreCaseAndIdNot(String licenseNumber, Long id);
 
     @Query("""
-            SELECT d
-            FROM DoctorEntity d
-            WHERE d.isActive = true
-              AND (:fullName IS NULL OR LOWER(d.fullName) LIKE LOWER(CONCAT('%', :fullName, '%')))
-              AND (:department IS NULL OR LOWER(d.department) LIKE LOWER(CONCAT('%', :department, '%')))
-              AND (:specialization IS NULL OR LOWER(d.specialization) LIKE LOWER(CONCAT('%', :specialization, '%')))
-            """)
+        SELECT d
+        FROM DoctorEntity d
+        WHERE d.isActive = true
+        AND (
+            :fullName IS NULL
+            OR LOWER(CAST(d.fullName AS string))
+               LIKE LOWER(CONCAT('%', CAST(:fullName AS string), '%'))
+        )
+        AND (
+            :department IS NULL
+            OR LOWER(CAST(d.department AS string))
+               LIKE LOWER(CONCAT('%', CAST(:department AS string), '%'))
+        )
+        AND (
+            :specialization IS NULL
+            OR LOWER(CAST(d.specialization AS string))
+               LIKE LOWER(CONCAT('%', CAST(:specialization AS string), '%'))
+        )
+        """)
     Page<DoctorEntity> search(
             @Param("fullName") String fullName,
             @Param("department") String department,

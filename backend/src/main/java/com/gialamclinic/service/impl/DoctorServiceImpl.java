@@ -117,7 +117,16 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private String normalizeFilter(String value) {
-        return StringUtils.hasText(value) ? value.trim() : null;
+
+        if (value == null)
+            return null;
+
+        value = value.trim();
+
+        if (value.isBlank())
+            return null;
+
+        return value;
     }
 
     private void validateUniqueFieldsForCreate(DoctorRequest request) {
