@@ -74,11 +74,20 @@ public class GlobalExceptionHandler {
     handleConflict(
             ConflictException ex
     ){
-        return buildResponse(
-                HttpStatus.CONFLICT,
-                ex.getMessage(),
-                null
-        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+
+                        ApiResponse.builder()
+                                .success(false)
+                                .message(
+                                        ex.getMessage()
+                                )
+                                .build()
+
+                );
+
     }
 
 

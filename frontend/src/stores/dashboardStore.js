@@ -178,7 +178,9 @@ const isSameCalendarDate = (firstDate, secondDate) =>
   firstDate.getDate() === secondDate.getDate()
 
 const normalizeStatus = (status) => {
-  const normalizedStatus = String(status ?? 'PENDING').trim().toUpperCase()
+  const normalizedStatus = String(status ?? 'PENDING')
+    .trim()
+    .toUpperCase()
 
   if (normalizedStatus === 'COMPLETED') {
     return 'Completed'
@@ -214,6 +216,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const initialized = ref(false)
   const error = ref('')
   const patients = ref([])
+  const patientsResponseMeta = ref(null)
   const appointments = ref([])
   const medicines = ref([])
   const medicalRecords = ref([])
@@ -221,7 +224,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const systemHealth = ref(DEFAULT_SYSTEM_HEALTH)
   const quickActions = ref(QUICK_ACTIONS)
 
-  const totalPatients = computed(() => patients.value.length)
+  const totalPatients = computed(
+  () =>
+  patientsResponseMeta.value?.totalElements
+  ??
+  patients.value.length
+  )
 
   const normalizedAppointments = computed(() =>
     appointments.value.map((appointment, index) => {
@@ -235,7 +243,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
         'Unassigned Doctor',
       )
       const doctorIdentifier =
-        pickFirstValue(appointment, DOCTOR_ID_PATHS) || doctorName.toLowerCase().replace(/\s+/g, '-')
+        pickFirstValue(appointment, DOCTOR_ID_PATHS) ||
+        doctorName.toLowerCase().replace(/\s+/g, '-')
 
       return {
         raw: appointment,
@@ -267,7 +276,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
   )
 
   const pendingAppointmentsCount = computed(
-    () => normalizedAppointments.value.filter((appointment) => appointment.status === 'Pending').length,
+    () =>
+      normalizedAppointments.value.filter((appointment) => appointment.status === 'Pending').length,
   )
 
   const patientVisitTrend = computed(() => {
@@ -326,7 +336,9 @@ export const useDashboardStore = defineStore('dashboard', () => {
     {
       title: 'Total Patients',
       value: formatNumber(totalPatients.value),
-      subtext: totalPatients.value ? `${formatNumber(totalPatients.value)} registered patients` : 'No patients yet',
+      subtext: totalPatients.value
+        ? `${formatNumber(totalPatients.value)} registered patients`
+        : 'No patients yet',
       badgeTone: totalPatients.value ? 'success' : 'info',
       icon: markRaw(Users),
     },
@@ -365,12 +377,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
     try {
       const [patientsResponse, appointmentsResponse, medicinesResponse, medicalRecordsResponse] =
-        await Promise.all([
-          getPatients(),
-          getAppointments(),
-          getMedicines(),
-          getMedicalRecords(),
-        ])
+        await Promise.all([getPatients(), getAppointments(), getMedicines(), getMedicalRecords()])
+
+      patientsResponseMeta.value =
+        patientsResponse?.data
+        ??
+        patientsResponse
 
       patients.value = extractCollection(patientsResponse)
       appointments.value = extractCollection(appointmentsResponse)

@@ -3,20 +3,37 @@ package com.gialamclinic.service;
 import com.gialamclinic.dto.request.AppointmentRequest;
 import com.gialamclinic.dto.request.AppointmentStatusRequest;
 import com.gialamclinic.dto.response.AppointmentResponse;
+
 import com.gialamclinic.entity.Appointment;
 import com.gialamclinic.entity.DoctorEntity;
 import com.gialamclinic.entity.Patient;
 import com.gialamclinic.entity.User;
+
+import com.gialamclinic.enums.AppointmentStatus;
+
+import com.gialamclinic.exception.BadRequestException;
+import com.gialamclinic.exception.ConflictException;
 import com.gialamclinic.exception.ResourceNotFoundException;
+
 import com.gialamclinic.mapper.AppointmentMapper;
+
 import com.gialamclinic.repository.AppointmentRepository;
 import com.gialamclinic.repository.DoctorRepository;
 import com.gialamclinic.repository.PatientRepository;
 import com.gialamclinic.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.*;
+
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
+
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,35 +49,38 @@ public class AppointmentService {
 
     private final AppointmentMapper mapper;
 
-
-    // CREATE
-
     public AppointmentResponse create(
             AppointmentRequest request
     ){
+
+        validateWorkingHours(request);
+
+        validateDuplicateAppointment(
+                request
+        );
 
         Patient patient =
                 patientRepo.findById(
                                 request.getPatientId()
                         )
                         .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Patient not found"
-                                )
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Patient not found"
+                                        )
                         );
 
         DoctorEntity doctor =
-                doctorRepo.findByIdAndIsActiveTrue(
+                doctorRepo
+                        .findByIdAndIsActiveTrue(
                                 request.getDoctorId()
                         )
                         .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Doctor not found"
-                                )
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Doctor not found"
+                                        )
                         );
-
-
-        // USER LOGIN
 
         String username =
 
@@ -74,11 +94,11 @@ public class AppointmentService {
                                 username
                         )
                         .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "User not found"
-                                )
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "User not found"
+                                        )
                         );
-
 
         Appointment appointment =
                 Appointment.builder()
@@ -118,21 +138,25 @@ public class AppointmentService {
 
     }
 
-
-    // GET ALL
-
     public Page<AppointmentResponse> getAll(
 
             int page,
+
             int size
+
     ){
 
         Pageable pageable =
+
                 PageRequest.of(
+
                         page,
+
                         size,
+
                         Sort.by("id")
                                 .descending()
+
                 );
 
         return appointmentRepo
@@ -144,33 +168,128 @@ public class AppointmentService {
     public AppointmentResponse getById(
             Long id
     ){
-        Appointment appointment = getActiveAppointment(id);
-        return mapper.toResponse(appointment);
+
+        return mapper.toResponse(
+                getActiveAppointment(id)
+        );
+
     }
 
     public AppointmentResponse update(
+
             Long id,
+
             AppointmentRequest request
+
     ){
-        Appointment appointment = getActiveAppointment(id);
-        Patient patient = patientRepo.findById(request.getPatientId()).orElseThrow(()-> new ResourceNotFoundException("Patient not found"));
-        DoctorEntity doctor = doctorRepo.findByIdAndIsActiveTrue(request.getDoctorId()).orElseThrow(()-> new ResourceNotFoundException("Doctor not found"));
+
+        Appointment appointment =
+                getActiveAppointment(id);
+
+        validateWorkingHours(request);
+
+        boolean changedSchedule =
+
+                !appointment
+                        .getDoctor()
+                        .getId()
+                        .equals(
+                                request.getDoctorId()
+                        )
+
+                        ||
+
+                        !appointment
+                                .getPatient()
+                                .getId()
+                                .equals(
+                                        request.getPatientId()
+                                )
+
+                        ||
+
+                        !appointment
+                                .getAppointmentDate()
+                                .equals(
+                                        request.getAppointmentDate()
+                                )
+
+                        ||
+
+                        !appointment
+                                .getAppointmentTime()
+                                .equals(
+                                        request.getAppointmentTime()
+                                );
+
+        if(changedSchedule){
+
+            validateDuplicateAppointment(
+                    request
+            );
+
+        }
+
+        Patient patient =
+                patientRepo.findById(
+                                request.getPatientId()
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Patient not found"
+                                        )
+                        );
+
+        DoctorEntity doctor =
+                doctorRepo
+                        .findByIdAndIsActiveTrue(
+                                request.getDoctorId()
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new ResourceNotFoundException(
+                                                "Doctor not found"
+                                        )
+                        );
 
         appointment.setPatient(patient);
+
         appointment.setDoctor(doctor);
-        appointment.setAppointmentDate(request.getAppointmentDate());
-        appointment.setAppointmentTime(request.getAppointmentTime());
-        appointment.setReason(request.getReason());
-        appointment.setNotes(request.getNotes());
-        appointment = appointmentRepo.save(appointment);
-        return mapper.toResponse(appointment);
+
+        appointment.setAppointmentDate(
+                request.getAppointmentDate()
+        );
+
+        appointment.setAppointmentTime(
+                request.getAppointmentTime()
+        );
+
+        appointment.setReason(
+                request.getReason()
+        );
+
+        appointment.setNotes(
+                request.getNotes()
+        );
+
+        appointment =
+                appointmentRepo.save(
+                        appointment
+                );
+
+        return mapper.toResponse(
+                appointment
+        );
+
     }
 
     public void delete(
             Long id
     ){
 
-        Appointment appointment = getActiveAppointment(id);
+        Appointment appointment =
+                getActiveAppointment(id);
 
         appointment.setIsActive(false);
 
@@ -185,15 +304,15 @@ public class AppointmentService {
             Long id,
 
             AppointmentStatusRequest request
+
     ){
 
-        Appointment appointment = getActiveAppointment(id);
-
+        Appointment appointment =
+                getActiveAppointment(id);
 
         appointment.setStatus(
                 request.getStatus()
         );
-
 
         appointment =
                 appointmentRepo.save(
@@ -206,13 +325,158 @@ public class AppointmentService {
 
     }
 
-    private Appointment getActiveAppointment(Long id) {
-        return appointmentRepo.findByIdAndIsActiveTrue(id)
+    private Appointment getActiveAppointment(
+            Long id
+    ){
+
+        return appointmentRepo
+                .findByIdAndIsActiveTrue(id)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException(
-                                "Appointment not found"
-                        )
+                        () ->
+                                new ResourceNotFoundException(
+                                        "Appointment not found"
+                                )
                 );
+
+    }
+
+    private void validateWorkingHours(
+            AppointmentRequest request
+    ){
+
+        if(
+
+                request
+                        .getAppointmentDate()
+                        .getDayOfWeek()
+
+                        ==
+
+                        DayOfWeek.SUNDAY
+
+        ){
+
+            throw new BadRequestException(
+
+                    "Phòng khám nghỉ Chủ nhật"
+
+            );
+
+        }
+
+        LocalTime time =
+                request.getAppointmentTime();
+
+        boolean morning =
+
+                !time.isBefore(
+                        LocalTime.of(8,0)
+                )
+
+                        &&
+
+                        !time.isAfter(
+                                LocalTime.of(12,0)
+                        );
+
+        boolean afternoon =
+
+                !time.isBefore(
+                        LocalTime.of(13,30)
+                )
+
+                        &&
+
+                        !time.isAfter(
+                                LocalTime.of(17,30)
+                        );
+
+        if(
+
+                !morning
+
+                        &&
+
+                        !afternoon
+
+        ){
+
+            throw new BadRequestException(
+
+                    "Giờ khám 08:00-12:00 hoặc 13:30-17:30"
+
+            );
+
+        }
+
+    }
+
+    private void validateDuplicateAppointment(
+
+            AppointmentRequest request
+
+    ){
+
+        List<AppointmentStatus> statuses =
+
+                List.of(
+
+                        AppointmentStatus.PENDING,
+
+                        AppointmentStatus.CONFIRMED
+
+                );
+
+        boolean doctorBusy =
+
+                appointmentRepo
+                        .existsByDoctorIdAndAppointmentDateAndAppointmentTimeAndStatusInAndIsActiveTrue(
+
+                                request.getDoctorId(),
+
+                                request.getAppointmentDate(),
+
+                                request.getAppointmentTime(),
+
+                                statuses
+
+                        );
+
+        if(doctorBusy){
+
+            throw new ConflictException(
+
+                    "Bác sĩ đã có lịch khám"
+
+            );
+
+        }
+
+        boolean patientBusy =
+
+                appointmentRepo
+                        .existsByPatientIdAndAppointmentDateAndAppointmentTimeAndStatusInAndIsActiveTrue(
+
+                                request.getPatientId(),
+
+                                request.getAppointmentDate(),
+
+                                request.getAppointmentTime(),
+
+                                statuses
+
+                        );
+
+        if(patientBusy){
+
+            throw new ConflictException(
+
+                    "Bệnh nhân đã có lịch khám"
+
+            );
+
+        }
+
     }
 
 }

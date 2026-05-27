@@ -1,21 +1,65 @@
 package com.gialamclinic.repository;
+
 import com.gialamclinic.entity.Appointment;
 import com.gialamclinic.enums.AppointmentStatus;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
-public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    Page<Appointment> findByStatus(AppointmentStatus status, Pageable pageable);
+public interface AppointmentRepository
+        extends JpaRepository<Appointment, Long> {
 
-    Page<Appointment> findByDoctorId(Long doctorId, Pageable pageable);
+    Page<Appointment> findByStatus(
+            AppointmentStatus status,
+            Pageable pageable
+    );
 
-    Page<Appointment> findByAppointmentDate(LocalDate appointmentDate, Pageable pageable);
+    Page<Appointment> findByDoctorId(
+            Long doctorId,
+            Pageable pageable
+    );
 
-    Page<Appointment> findByIsActiveTrue(Pageable pageable);
+    Page<Appointment> findByAppointmentDate(
+            LocalDate appointmentDate,
+            Pageable pageable
+    );
 
-    Optional<Appointment> findByIdAndIsActiveTrue(Long id);
+    Page<Appointment> findByIsActiveTrue(
+            Pageable pageable
+    );
+
+    Optional<Appointment> findByIdAndIsActiveTrue(
+            Long id
+    );
+
+    boolean existsByDoctorIdAndAppointmentDateAndAppointmentTimeAndStatusInAndIsActiveTrue(
+
+            Long doctorId,
+
+            LocalDate appointmentDate,
+
+            LocalTime appointmentTime,
+
+            List<AppointmentStatus> statuses
+
+    );
+
+    boolean existsByPatientIdAndAppointmentDateAndAppointmentTimeAndStatusInAndIsActiveTrue(
+
+            Long patientId,
+
+            LocalDate appointmentDate,
+
+            LocalTime appointmentTime,
+
+            List<AppointmentStatus> statuses
+
+    );
+
 }
