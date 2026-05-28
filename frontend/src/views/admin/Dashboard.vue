@@ -30,6 +30,13 @@ const {
 
 const hasRecentAppointments = computed(() => recentAppointments.value.length > 0)
 const isTrendEmpty = computed(() => patientVisitTrend.value.values.every((value) => value === 0))
+const inProgressAppointments = computed(
+  () => recentAppointments.value.filter((item) => item.status === 'IN_PROGRESS').length,
+)
+
+const completedAppointments = computed(
+  () => recentAppointments.value.filter((item) => item.status === 'COMPLETED').length,
+)
 </script>
 
 <template>
@@ -83,6 +90,24 @@ const isTrendEmpty = computed(() => patientVisitTrend.value.values.every((value)
           :badge-tone="card.badgeTone"
           :loading="loading"
         />
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="rounded-2xl bg-white p-5 shadow-sm">
+          <p class="text-sm text-slate-500">In Progress Examinations</p>
+
+          <h3 class="mt-2 text-3xl font-bold text-violet-600">
+            {{ inProgressAppointments }}
+          </h3>
+        </div>
+
+        <div class="rounded-2xl bg-white p-5 shadow-sm">
+          <p class="text-sm text-slate-500">Completed Appointments</p>
+
+          <h3 class="mt-2 text-3xl font-bold text-emerald-600">
+            {{ completedAppointments }}
+          </h3>
+        </div>
       </div>
 
       <div

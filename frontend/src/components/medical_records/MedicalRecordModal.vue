@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { createMedicalRecord } from '@/api/medicalRecordApi'
 
 const props = defineProps({
@@ -15,7 +15,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'created'])
-
 const form = reactive({
   appointmentId: '',
 
@@ -45,6 +44,17 @@ const submit = async () => {
 
   closeModal()
 }
+const availableAppointments = computed(() =>
+
+  props.appointments.filter(
+
+    item =>
+
+      item.status === 'IN_PROGRESS'
+
+  )
+
+)
 </script>
 
 <template>
@@ -77,7 +87,7 @@ const submit = async () => {
           >
             <option value="">Select appointment</option>
 
-            <option v-for="item in props.appointments" :key="item.id" :value="item.id">
+            <option v-for="item in availableAppointments" :key="item.id" :value="item.id">
               {{ item.patientName }}
 
               -

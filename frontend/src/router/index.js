@@ -3,9 +3,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Appointments from '@/views/admin/Appointments.vue'
 import Dashboard from '@/views/admin/Dashboard.vue'
 import Doctors from '@/views/admin/Doctors.vue'
-import Patients from '@/views/admin/Patients.vue'
-import Login from '@/views/Login.vue'
 import MedicalRecords from '@/views/admin/MedicalRecords.vue'
+import Patients from '@/views/admin/Patients.vue'
+import Prescriptions from '@/views/admin/Prescriptions.vue'
+
+import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 
 const router = createRouter({
@@ -17,6 +19,7 @@ const router = createRouter({
       name: 'register',
       component: Register,
     },
+
     {
       path: '/login',
       name: 'login',
@@ -46,9 +49,19 @@ const router = createRouter({
       name: 'doctors',
       component: Doctors,
     },
+
     {
       path: '/medical-records',
+      name: 'medical-records',
       component: MedicalRecords,
+    },
+
+    // PRESCRIPTIONS
+
+    {
+      path: '/prescriptions',
+      name: 'prescriptions',
+      component: Prescriptions,
     },
   ],
 })

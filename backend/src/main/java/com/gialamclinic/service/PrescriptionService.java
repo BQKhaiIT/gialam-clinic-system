@@ -3,6 +3,7 @@ package com.gialamclinic.service;
 import com.gialamclinic.dto.request.*;
 import com.gialamclinic.dto.response.PrescriptionResponse;
 import com.gialamclinic.entity.*;
+import com.gialamclinic.enums.AppointmentStatus;
 import com.gialamclinic.exception.*;
 import com.gialamclinic.mapper.PrescriptionMapper;
 import com.gialamclinic.repository.*;
@@ -38,7 +39,7 @@ public class PrescriptionService {
     private final PrescriptionMapper
             mapper;
 
-
+    private final AppointmentRepository appointmentRepo;
     @Transactional
     public PrescriptionResponse create(
 
@@ -64,6 +65,50 @@ public class PrescriptionService {
 
                         );
 
+        Appointment appointment =
+                medicalRecord.getAppointment();
+
+        if(
+                appointment.getStatus()
+                        != AppointmentStatus.IN_PROGRESS
+        ){
+
+            throw new BadRequestException(
+                    "Prescription can only be created for in-progress appointments"
+            );
+
+        }
+
+        if(
+
+                prescriptionRepo
+                        .existsByMedicalRecordId(
+                                medicalRecord.getId()
+                        )
+
+        ){
+
+            throw new BadRequestException(
+                    "Prescription already exists"
+            );
+
+        }
+
+        if(
+
+                request.getMedicines() == null
+
+                        ||
+
+                        request.getMedicines().isEmpty()
+
+        ){
+
+            throw new BadRequestException(
+                    "Prescription medicines cannot be empty"
+            );
+
+        }
 
         String username =
 
@@ -124,8 +169,8 @@ public class PrescriptionService {
                 details =
 
                 new ArrayList<>();
-
-
+        Set<Long> medicineIds =
+                new HashSet<>();
         for(
 
                 PrescriptionItemRequest item
@@ -135,6 +180,19 @@ public class PrescriptionService {
                 request.getMedicines()
 
         ){
+            if(
+
+                    !medicineIds.add(
+                            item.getMedicineId()
+                    )
+
+            ){
+
+                throw new BadRequestException(
+                        "Duplicate medicine in prescription"
+                );
+
+            }
 
             Medicine medicine =
 
@@ -240,10 +298,29 @@ public class PrescriptionService {
                 prescription
         );
 
+// AUTO COMPLETE APPOINTMENT
+
+        appointment.setStatus(
+                AppointmentStatus.COMPLETED
+        );
+
+        appointmentRepo.save(
+                appointment
+        );
+
         return mapper.toResponse(
                 prescription
         );
 
     }
+    @Transactional(readOnly = true)
+    public List<PrescriptionResponse> getAll(){
 
+        return prescriptionRepo
+                .findAll()
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+
+    }
 }

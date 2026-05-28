@@ -26,3 +26,14 @@ export const deleteAppointment = async (id) => {
   const { data } = await apiClient.delete(`/api/v1/appointments/${id}`)
   return data
 }
+export const updateAppointmentStatus = (
+  id,
+
+  payload,
+) => {
+  return api.patch(
+    `/appointments/${id}/status`,
+
+    payload,
+  )
+}

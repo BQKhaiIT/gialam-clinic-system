@@ -10,18 +10,20 @@ import com.gialamclinic.mapper.MedicalRecordMapper;
 import com.gialamclinic.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepo;
     private final AppointmentRepository appointmentRepo;
-    private final UserRepository userRepo;
     private final MedicalRecordMapper mapper;
 
     //CREATE
+    @Transactional
     public MedicalRecordResponse create(
             MedicalRecordRequest request
     ) {
@@ -37,7 +39,17 @@ public class MedicalRecordService {
                                 )
                         );
 
-        // CHẶN TẠO TRÙNG
+        // VALIDATE APPOINTMENT DATE
+        if(
+                appointment.getAppointmentDate()
+                        .isAfter(LocalDate.now())
+        ){
+
+            throw new BadRequestException(
+                    "Chưa đến ngày khám"
+            );
+
+        }
 
         if (
                 medicalRecordRepo
@@ -52,50 +64,46 @@ public class MedicalRecordService {
 
         }
 
+        if(
+                appointment.getStatus()
+                        == AppointmentStatus.COMPLETED
+        ){
+
+            throw new BadRequestException(
+                    "Completed appointment cannot create medical record"
+            );
+
+        }
+
+        if(
+                appointment.getStatus()
+                        == AppointmentStatus.CANCELLED
+        ){
+
+            throw new BadRequestException(
+                    "Cancelled appointment cannot create medical record"
+            );
+
+        }
+
         // CHỈ CHO PENDING HOẶC IN_PROGRESS
 
         if (
 
                 appointment.getStatus()
-                        != AppointmentStatus.PENDING
+                        != AppointmentStatus.IN_PROGRESS
 
         ) {
 
             throw new BadRequestException(
 
-                    "Only pending appointments can create medical record"
+                    "Only in-progress appointments can create medical record"
 
             );
 
         }
 
-        String username =
 
-                SecurityContextHolder
-
-                        .getContext()
-
-                        .getAuthentication()
-
-                        .getName();
-
-        User doctor =
-
-                userRepo
-
-                        .findByUsername(
-                                username
-                        )
-
-                        .orElseThrow(
-
-                                () -> new ResourceNotFoundException(
-
-                                        "Doctor not found"
-
-                                )
-
-                        );
 
         MedicalRecord medicalRecord =
 
@@ -110,7 +118,7 @@ public class MedicalRecordService {
                         )
 
                         .doctor(
-                                doctor
+                                appointment.getDoctor()
                         )
 
                         .diagnosis(
@@ -132,20 +140,6 @@ public class MedicalRecordService {
                 medicalRecordRepo.save(
                         medicalRecord
                 );
-
-        // AUTO COMPLETE
-
-        appointment.setStatus(
-
-                AppointmentStatus.COMPLETED
-
-        );
-
-        appointmentRepo.save(
-
-                appointment
-
-        );
 
         return mapper.toResponse(
 

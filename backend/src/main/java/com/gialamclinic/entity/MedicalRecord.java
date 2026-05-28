@@ -33,7 +33,7 @@ public class MedicalRecord extends BaseEntity {
             name = "doctor_id",
             nullable = false
     )
-    private User doctor;
+    private DoctorEntity doctor;
 
     @Column(columnDefinition = "TEXT")
     private String diagnosis;

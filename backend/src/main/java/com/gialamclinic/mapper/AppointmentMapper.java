@@ -1,15 +1,59 @@
 package com.gialamclinic.mapper;
 
 import com.gialamclinic.dto.response.AppointmentResponse;
+import com.gialamclinic.entity.MedicalRecord;
 import com.gialamclinic.entity.Appointment;
+
+import com.gialamclinic.repository.MedicalRecordRepository;
+import com.gialamclinic.repository.PrescriptionRepository;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class AppointmentMapper {
+
+    private final MedicalRecordRepository medicalRecordRepo;
+
+    private final PrescriptionRepository prescriptionRepo;
 
     public AppointmentResponse toResponse(
             Appointment appointment
     ){
+
+        boolean hasMedicalRecord =
+
+                medicalRecordRepo
+                        .existsByAppointmentId(
+                                appointment.getId()
+                        );
+
+        boolean hasPrescription = false;
+
+        if(hasMedicalRecord){
+
+            MedicalRecord medicalRecord =
+
+                    medicalRecordRepo
+                            .findByAppointmentId(
+                                    appointment.getId()
+                            )
+                            .orElse(null);
+
+            if(medicalRecord != null){
+
+                hasPrescription =
+
+                        prescriptionRepo
+                                .existsByMedicalRecordId(
+                                        medicalRecord.getId()
+                                );
+
+            }
+
+        }
 
         return AppointmentResponse.builder()
 
@@ -73,6 +117,14 @@ public class AppointmentMapper {
 
                 .createdAt(
                         appointment.getCreatedAt()
+                )
+
+                .hasMedicalRecord(
+                        hasMedicalRecord
+                )
+
+                .hasPrescription(
+                        hasPrescription
                 )
 
                 .build();

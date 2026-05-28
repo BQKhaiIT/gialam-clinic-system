@@ -2,6 +2,7 @@ package com.gialamclinic.mapper;
 
 import com.gialamclinic.dto.response.*;
 import com.gialamclinic.entity.*;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,17 +12,14 @@ public class PrescriptionMapper {
 
     public PrescriptionResponse toResponse(
             Prescription prescription
-    ){
+    ) {
 
-        List<PrescriptionItemResponse>
-                medicines =
+        List<PrescriptionItemResponse> medicines =
 
                 prescription
                         .getDetails()
                         .stream()
-
                         .map(this::mapItem)
-
                         .toList();
 
         return PrescriptionResponse
@@ -47,6 +45,16 @@ public class PrescriptionMapper {
 
                 )
 
+                .patientName(
+
+                        prescription
+                                .getMedicalRecord()
+                                .getAppointment()
+                                .getPatient()
+                                .getFullName()
+
+                )
+
                 .doctorName(
 
                         prescription
@@ -59,6 +67,14 @@ public class PrescriptionMapper {
                         prescription.getNote()
                 )
 
+                .totalMedicines(
+                        medicines.size()
+                )
+
+                .createdAt(
+                        prescription.getCreatedAt()
+                )
+
                 .medicines(
                         medicines
                 )
@@ -67,12 +83,11 @@ public class PrescriptionMapper {
 
     }
 
-    private PrescriptionItemResponse
-    mapItem(
+    private PrescriptionItemResponse mapItem(
 
             PrescriptionDetail detail
 
-    ){
+    ) {
 
         return PrescriptionItemResponse
                 .builder()

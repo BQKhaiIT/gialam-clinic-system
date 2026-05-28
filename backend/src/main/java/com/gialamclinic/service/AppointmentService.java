@@ -4,10 +4,7 @@ import com.gialamclinic.dto.request.AppointmentRequest;
 import com.gialamclinic.dto.request.AppointmentStatusRequest;
 import com.gialamclinic.dto.response.AppointmentResponse;
 
-import com.gialamclinic.entity.Appointment;
-import com.gialamclinic.entity.DoctorEntity;
-import com.gialamclinic.entity.Patient;
-import com.gialamclinic.entity.User;
+import com.gialamclinic.entity.*;
 
 import com.gialamclinic.enums.AppointmentStatus;
 
@@ -17,10 +14,7 @@ import com.gialamclinic.exception.ResourceNotFoundException;
 
 import com.gialamclinic.mapper.AppointmentMapper;
 
-import com.gialamclinic.repository.AppointmentRepository;
-import com.gialamclinic.repository.DoctorRepository;
-import com.gialamclinic.repository.PatientRepository;
-import com.gialamclinic.repository.UserRepository;
+import com.gialamclinic.repository.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,11 +41,15 @@ public class AppointmentService {
 
     private final UserRepository userRepo;
 
+    private final MedicalRecordRepository medicalRecordRepo;
+
+    private final PrescriptionRepository prescriptionRepo;
+
     private final AppointmentMapper mapper;
 
     public AppointmentResponse create(
             AppointmentRequest request
-    ){
+    ) {
 
         validateWorkingHours(request);
 
@@ -144,7 +142,7 @@ public class AppointmentService {
 
             int size
 
-    ){
+    ) {
 
         Pageable pageable =
 
@@ -167,7 +165,7 @@ public class AppointmentService {
 
     public AppointmentResponse getById(
             Long id
-    ){
+    ) {
 
         return mapper.toResponse(
                 getActiveAppointment(id)
@@ -181,7 +179,7 @@ public class AppointmentService {
 
             AppointmentRequest request
 
-    ){
+    ) {
 
         Appointment appointment =
                 getActiveAppointment(id);
@@ -222,7 +220,7 @@ public class AppointmentService {
                                         request.getAppointmentTime()
                                 );
 
-        if(changedSchedule){
+        if (changedSchedule) {
 
             validateDuplicateAppointment(
                     request
@@ -286,7 +284,7 @@ public class AppointmentService {
 
     public void delete(
             Long id
-    ){
+    ) {
 
         Appointment appointment =
                 getActiveAppointment(id);
@@ -305,13 +303,113 @@ public class AppointmentService {
 
             AppointmentStatusRequest request
 
-    ){
+    ) {
 
         Appointment appointment =
                 getActiveAppointment(id);
 
+        AppointmentStatus currentStatus =
+                appointment.getStatus();
+
+        AppointmentStatus newStatus =
+                request.getStatus();
+
+        // COMPLETED không cho đổi nữa
+
+        if (currentStatus == AppointmentStatus.COMPLETED) {
+
+            throw new BadRequestException(
+                    "Appointment already completed"
+            );
+
+        }
+
+        // VALIDATE FLOW
+
+        boolean validTransition =
+
+                (currentStatus == AppointmentStatus.PENDING
+                        && newStatus == AppointmentStatus.CONFIRMED)
+
+                        ||
+
+                        (currentStatus == AppointmentStatus.CONFIRMED
+                                && newStatus == AppointmentStatus.IN_PROGRESS)
+
+                        ||
+
+                        (currentStatus == AppointmentStatus.PENDING
+                                && newStatus == AppointmentStatus.CANCELLED)
+
+                        ||
+
+                        (currentStatus == AppointmentStatus.CONFIRMED
+                                && newStatus == AppointmentStatus.CANCELLED);
+
+        if (!validTransition) {
+
+            throw new BadRequestException(
+                    "Invalid appointment status transition"
+            );
+
+        }
+
+        // VALIDATE COMPLETE
+
+        if (newStatus == AppointmentStatus.COMPLETED) {
+
+            // CHECK MEDICAL RECORD
+
+            boolean hasMedicalRecord =
+
+                    medicalRecordRepo
+                            .existsByAppointmentId(
+                                    appointment.getId()
+                            );
+
+            if (!hasMedicalRecord) {
+
+                throw new BadRequestException(
+                        "Chưa tạo hồ sơ khám bệnh"
+                );
+
+            }
+
+            // GET MEDICAL RECORD
+
+            MedicalRecord medicalRecord =
+
+                    medicalRecordRepo
+                            .findByAppointmentId(
+                                    appointment.getId()
+                            )
+                            .orElseThrow(
+                                    () -> new BadRequestException(
+                                            "Medical record not found"
+                                    )
+                            );
+
+            // CHECK PRESCRIPTION
+
+            boolean hasPrescription =
+
+                    prescriptionRepo
+                            .existsByMedicalRecordId(
+                                    medicalRecord.getId()
+                            );
+
+            if (!hasPrescription) {
+
+                throw new BadRequestException(
+                        "Chưa tạo đơn thuốc"
+                );
+
+            }
+
+        }
+
         appointment.setStatus(
-                request.getStatus()
+                newStatus
         );
 
         appointment =
@@ -327,7 +425,7 @@ public class AppointmentService {
 
     private Appointment getActiveAppointment(
             Long id
-    ){
+    ) {
 
         return appointmentRepo
                 .findByIdAndIsActiveTrue(id)
@@ -342,9 +440,9 @@ public class AppointmentService {
 
     private void validateWorkingHours(
             AppointmentRequest request
-    ){
+    ) {
 
-        if(
+        if (
 
                 request
                         .getAppointmentDate()
@@ -354,7 +452,7 @@ public class AppointmentService {
 
                         DayOfWeek.SUNDAY
 
-        ){
+        ) {
 
             throw new BadRequestException(
 
@@ -370,28 +468,28 @@ public class AppointmentService {
         boolean morning =
 
                 !time.isBefore(
-                        LocalTime.of(8,0)
+                        LocalTime.of(8, 0)
                 )
 
                         &&
 
                         !time.isAfter(
-                                LocalTime.of(12,0)
+                                LocalTime.of(12, 0)
                         );
 
         boolean afternoon =
 
                 !time.isBefore(
-                        LocalTime.of(13,30)
+                        LocalTime.of(13, 30)
                 )
 
                         &&
 
                         !time.isAfter(
-                                LocalTime.of(17,30)
+                                LocalTime.of(17, 30)
                         );
 
-        if(
+        if (
 
                 !morning
 
@@ -399,7 +497,7 @@ public class AppointmentService {
 
                         !afternoon
 
-        ){
+        ) {
 
             throw new BadRequestException(
 
@@ -415,7 +513,7 @@ public class AppointmentService {
 
             AppointmentRequest request
 
-    ){
+    ) {
 
         List<AppointmentStatus> statuses =
 
@@ -423,7 +521,9 @@ public class AppointmentService {
 
                         AppointmentStatus.PENDING,
 
-                        AppointmentStatus.CONFIRMED
+                        AppointmentStatus.CONFIRMED,
+
+                        AppointmentStatus.IN_PROGRESS
 
                 );
 
@@ -442,7 +542,7 @@ public class AppointmentService {
 
                         );
 
-        if(doctorBusy){
+        if (doctorBusy) {
 
             throw new ConflictException(
 
@@ -467,7 +567,7 @@ public class AppointmentService {
 
                         );
 
-        if(patientBusy){
+        if (patientBusy) {
 
             throw new ConflictException(
 

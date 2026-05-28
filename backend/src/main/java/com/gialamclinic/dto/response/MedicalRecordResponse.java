@@ -29,4 +29,5 @@ public class MedicalRecordResponse {
 
     private LocalDateTime createdAt;
 
+    private Boolean hasPrescription;
 }

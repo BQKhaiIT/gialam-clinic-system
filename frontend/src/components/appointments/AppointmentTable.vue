@@ -28,21 +28,25 @@ defineProps({
   },
 })
 
-defineEmits(['view', 'edit', 'delete', 'page-change'])
+const emit = defineEmits(['view', 'edit', 'delete', 'page-change', 'status-update'])
 
 const statusClasses = {
   PENDING: 'bg-[#FFF7ED] text-[#EA580C]',
   CONFIRMED: 'bg-[#EFF6FF] text-[#2563EB]',
+  IN_PROGRESS: 'bg-[#F3E8FF] text-[#7C3AED]',
   COMPLETED: 'bg-[#ECFDF3] text-[#15803D]',
   CANCELLED: 'bg-[#FEF2F2] text-[#DC2626]',
 }
 
-const getStatusClass = (status) => statusClasses[String(status ?? 'PENDING').toUpperCase()] ?? statusClasses.PENDING
+const getStatusClass = (status) =>
+  statusClasses[String(status ?? 'PENDING').toUpperCase()] ?? statusClasses.PENDING
 </script>
 
 <template>
   <article class="dashboard-card overflow-hidden">
-    <div class="flex flex-col gap-2 border-b border-slate-200/70 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+    <div
+      class="flex flex-col gap-2 border-b border-slate-200/70 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between"
+    >
       <div>
         <h2 class="panel-title mb-1 text-slate-900">Appointments List</h2>
         <p class="mb-0 text-sm text-slate-500">Scheduled visits and their latest statuses</p>
@@ -55,7 +59,9 @@ const getStatusClass = (status) => statusClasses[String(status ?? 'PENDING').toU
     <div class="table-responsive">
       <table class="table mb-0 align-middle">
         <thead>
-          <tr class="border-b border-slate-200/70 text-sm uppercase tracking-[0.08em] text-slate-400">
+          <tr
+            class="border-b border-slate-200/70 text-sm uppercase tracking-[0.08em] text-slate-400"
+          >
             <th class="px-5 py-4 sm:px-6">Patient</th>
             <th class="px-5 py-4">Doctor</th>
             <th class="px-5 py-4">Date</th>
@@ -88,7 +94,9 @@ const getStatusClass = (status) => statusClasses[String(status ?? 'PENDING').toU
               :key="appointment.id"
               class="border-b border-slate-100 transition hover:bg-[#F8FBFC] last:border-b-0"
             >
-              <td class="px-5 py-4 font-semibold text-slate-900 sm:px-6">{{ appointment.patientName }}</td>
+              <td class="px-5 py-4 font-semibold text-slate-900 sm:px-6">
+                {{ appointment.patientName }}
+              </td>
               <td class="px-5 py-4 text-slate-600">{{ appointment.doctorName || 'N/A' }}</td>
               <td class="px-5 py-4 text-slate-600">{{ appointment.appointmentDate }}</td>
               <td class="px-5 py-4 text-slate-600">{{ appointment.appointmentTime }}</td>
@@ -101,27 +109,70 @@ const getStatusClass = (status) => statusClasses[String(status ?? 'PENDING').toU
                 </span>
               </td>
               <td class="px-5 py-4 text-end sm:px-6">
-                <div class="flex justify-end gap-2">
+                <div class="flex flex-wrap justify-end gap-2">
+                  <!-- VIEW -->
+
                   <button
                     type="button"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#D7E8ED] bg-white text-[#2F6F7D] transition hover:bg-[#EFF7F9]"
-                    @click="$emit('view', appointment)"
+                    @click="emit('view', appointment)"
                   >
                     <Eye class="h-4 w-4" />
                   </button>
+
+                  <!-- EDIT -->
+
                   <button
+                    v-if="appointment.status !== 'COMPLETED' && appointment.status !== 'CANCELLED'"
                     type="button"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#D7E8ED] bg-white text-[#2F6F7D] transition hover:bg-[#EFF7F9]"
-                    @click="$emit('edit', appointment)"
+                    @click="emit('edit', appointment)"
                   >
                     <Pencil class="h-4 w-4" />
                   </button>
+
+                  <!-- DELETE -->
+
                   <button
+                    v-if="appointment.status === 'PENDING'"
                     type="button"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#F5C2C7] bg-white text-[#C2414E] transition hover:bg-[#FFF5F6]"
-                    @click="$emit('delete', appointment)"
+                    @click="emit('delete', appointment)"
                   >
                     <Trash2 class="h-4 w-4" />
+                  </button>
+
+                  <!-- CONFIRM -->
+
+                  <button
+                    v-if="appointment.status === 'PENDING'"
+                    type="button"
+                    class="rounded-xl bg-blue-100 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-200"
+                    @click="emit('status-update', appointment.id, 'CONFIRMED')"
+                  >
+                    Confirm
+                  </button>
+
+                  <!-- START EXAMINATION -->
+
+                  <button
+                    v-if="appointment.status === 'CONFIRMED'"
+                    type="button"
+                    class="rounded-xl bg-violet-100 px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-200"
+                    @click="emit('status-update', appointment.id, 'IN_PROGRESS')"
+                  >
+                    Start Examination
+                  </button>
+
+                  <!-- CANCEL -->
+
+                  <button
+                    v-if="appointment.status === 'PENDING' || appointment.status === 'CONFIRMED'"
+                    type="button"
+                    class="rounded-xl bg-rose-100 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-200"
+                    @click="emit('status-update', appointment.id, 'CANCELLED')"
+                  >
+                    Cancel
                   </button>
                 </div>
               </td>

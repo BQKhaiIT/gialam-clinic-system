@@ -4,6 +4,7 @@ import { AlertTriangle, CalendarDays, Search, Stethoscope, UserPlus, X } from '@
 
 import {
   createAppointment,
+  updateAppointmentStatus,
   deleteAppointment,
   getAppointmentById,
   getAppointments,
@@ -82,7 +83,9 @@ const formatTime = (value) => {
 const normalizeAppointment = (appointment) => ({
   ...appointment,
   appointmentDateRaw: appointment.appointmentDate ?? '',
-  appointmentTimeRaw: appointment.appointmentTime ? String(appointment.appointmentTime).slice(0, 5) : '',
+  appointmentTimeRaw: appointment.appointmentTime
+    ? String(appointment.appointmentTime).slice(0, 5)
+    : '',
   appointmentDate: appointment.appointmentDate
     ? formatDate(appointment.appointmentDate, { day: '2-digit', month: 'short', year: 'numeric' })
     : 'N/A',
@@ -161,7 +164,8 @@ const filteredAppointments = computed(() => {
 
     const matchesDate = !filterDate.value || appointment.appointmentDateRaw === filterDate.value
     const matchesDoctor =
-      !selectedDoctorId.value || String(appointment.doctorId ?? '') === String(selectedDoctorId.value)
+      !selectedDoctorId.value ||
+      String(appointment.doctorId ?? '') === String(selectedDoctorId.value)
 
     return matchesKeyword && matchesDate && matchesDoctor
   })
@@ -173,7 +177,9 @@ const paginatedAppointments = computed(() => {
   const start = (currentPage.value - 1) * PAGE_SIZE
   return filteredAppointments.value.slice(start, start + PAGE_SIZE)
 })
-const isEmpty = computed(() => !loading.value && !error.value && filteredAppointments.value.length === 0)
+const isEmpty = computed(
+  () => !loading.value && !error.value && filteredAppointments.value.length === 0,
+)
 
 const showToast = (type, message) => {
   toast.value = {
@@ -277,7 +283,46 @@ const openDetailDrawer = async (appointment) => {
 const closeDetailDrawer = () => {
   showDetailDrawer.value = false
 }
+const handleStatusUpdate = async (
 
+  appointmentId,
+
+  status
+
+) => {
+
+  try {
+
+    await updateAppointmentStatus(
+
+      appointmentId,
+
+      { status }
+
+    )
+
+    await fetchAppointmentsData()
+
+    showToast(
+      'success',
+      `Appointment updated to ${status}`
+    )
+
+  } catch (error) {
+
+    showToast(
+
+      'error',
+
+      error?.response?.data?.message ||
+
+      'Update status failed'
+
+    )
+
+  }
+
+}
 const handleSubmitAppointment = async (payload) => {
   submitting.value = true
   error.value = ''
@@ -304,7 +349,9 @@ const handleSubmitAppointment = async (payload) => {
       submitError?.response?.data?.message ||
       submitError?.response?.data?.error ||
       submitError?.message ||
-      (formMode.value === 'edit' ? 'Unable to update appointment.' : 'Unable to create appointment.')
+      (formMode.value === 'edit'
+        ? 'Unable to update appointment.'
+        : 'Unable to create appointment.')
     error.value = message
     showToast('error', message)
   } finally {
@@ -392,7 +439,9 @@ onBeforeUnmount(() => {
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 class="panel-title mb-1 text-slate-900">Appointments Management</h2>
-            <p class="mb-0 text-sm text-slate-500">Create, review, update, and filter appointment records</p>
+            <p class="mb-0 text-sm text-slate-500">
+              Create, review, update, and filter appointment records
+            </p>
           </div>
 
           <div class="flex flex-col gap-3 md:flex-row md:items-center">
@@ -429,7 +478,8 @@ onBeforeUnmount(() => {
               >
                 <option value="">All doctors</option>
                 <option v-for="doctor in doctorOptions" :key="doctor.id" :value="String(doctor.id)">
-                  {{ doctor.fullName }}{{ doctor.specialization ? ` • ${doctor.specialization}` : '' }}
+                  {{ doctor.fullName
+                  }}{{ doctor.specialization ? ` • ${doctor.specialization}` : '' }}
                 </option>
               </select>
             </label>
@@ -485,6 +535,7 @@ onBeforeUnmount(() => {
         @edit="openEditModal"
         @delete="openDeleteModal"
         @page-change="currentPage = $event"
+        @status-update="handleStatusUpdate"
       />
     </section>
 
@@ -523,7 +574,10 @@ onBeforeUnmount(() => {
                   <h2 class="panel-title mb-1 text-slate-900">Delete Appointment</h2>
                   <p class="mb-0 text-sm text-slate-500">
                     This action will permanently remove the appointment for
-                    <span class="font-semibold text-slate-700">{{ selectedAppointment?.patientName }}</span>.
+                    <span class="font-semibold text-slate-700">{{
+                      selectedAppointment?.patientName
+                    }}</span
+                    >.
                   </p>
                 </div>
               </div>
@@ -536,7 +590,9 @@ onBeforeUnmount(() => {
               </button>
             </div>
 
-            <div class="border-y border-slate-200/70 bg-[#F8FBFC] px-5 py-4 text-sm text-slate-600 sm:px-6">
+            <div
+              class="border-y border-slate-200/70 bg-[#F8FBFC] px-5 py-4 text-sm text-slate-600 sm:px-6"
+            >
               Appointment ID:
               <span class="font-semibold text-slate-900">#{{ selectedAppointment?.id }}</span>
             </div>

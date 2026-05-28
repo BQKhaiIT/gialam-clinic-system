@@ -1,6 +1,7 @@
 package com.gialamclinic.repository;
 
 import com.gialamclinic.entity.Prescription;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PrescriptionRepository
@@ -8,5 +9,9 @@ public interface PrescriptionRepository
         Prescription,
         Long
         > {
+
+    boolean existsByMedicalRecordId(
+            Long medicalRecordId
+    );
 
 }

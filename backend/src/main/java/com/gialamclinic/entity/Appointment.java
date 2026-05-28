@@ -46,6 +46,9 @@ public class Appointment extends BaseEntity {
     )
     private User createdBy;
 
+    @OneToOne(mappedBy="appointment")
+    private MedicalRecord medicalRecord;
+
 
     @Column(name = "appointment_date")
     private LocalDate appointmentDate;

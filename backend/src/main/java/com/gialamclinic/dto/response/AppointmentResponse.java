@@ -38,4 +38,8 @@ public class AppointmentResponse {
     private AppointmentStatus status;
 
     private LocalDateTime createdAt;
+
+    private Boolean hasMedicalRecord;
+
+    private Boolean hasPrescription;
 }

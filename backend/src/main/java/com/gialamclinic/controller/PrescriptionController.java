@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(
         "/api/v1/prescriptions"
@@ -23,6 +25,19 @@ public class PrescriptionController {
     private final PrescriptionService
             service;
 
+
+    @GetMapping
+    public ApiResponse<List<PrescriptionResponse>> getAll(){
+
+        return ApiResponse
+                .<List<PrescriptionResponse>>builder()
+                .success(true)
+                .message("Prescription list")
+                .data(
+                        service.getAll()
+                )
+                .build();
+    }
 
     @PostMapping
     public ApiResponse<PrescriptionResponse>
