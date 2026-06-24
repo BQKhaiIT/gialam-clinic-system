@@ -6,7 +6,9 @@ import com.gialamclinic.entity.Medicine;
 import com.gialamclinic.exception.ResourceNotFoundException;
 import com.gialamclinic.mapper.MedicineMapper;
 import com.gialamclinic.repository.MedicineRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,11 @@ public class MedicineService {
 
     private final MedicineMapper mapper;
 
-
-    // CREATE
+// CREATE
 
     public MedicineResponse create(
             MedicineRequest request
-    ){
+    ) {
 
         Medicine medicine =
 
@@ -65,8 +66,7 @@ public class MedicineService {
 
     }
 
-
-    // GET ALL
+// GET ALL
 
     public Page<MedicineResponse> getAll(
 
@@ -74,7 +74,7 @@ public class MedicineService {
 
             int size
 
-    ){
+    ) {
 
         Pageable pageable =
 
@@ -95,8 +95,7 @@ public class MedicineService {
 
     }
 
-
-    // SEARCH
+// SEARCH
 
     public Page<MedicineResponse> search(
 
@@ -106,7 +105,7 @@ public class MedicineService {
 
             int size
 
-    ){
+    ) {
 
         Pageable pageable =
 
@@ -131,16 +130,11 @@ public class MedicineService {
 
     }
 
+// GET BY ID
 
-    // UPDATE STOCK
-
-    public MedicineResponse updateStock(
-
-            Long id,
-
-            UpdateStockRequest request
-
-    ){
+    public MedicineResponse getById(
+            Long id
+    ) {
 
         Medicine medicine =
 
@@ -148,7 +142,91 @@ public class MedicineService {
 
                         .orElseThrow(
 
-                                ()->new ResourceNotFoundException(
+                                () -> new ResourceNotFoundException(
+                                        "Medicine not found"
+                                )
+
+                        );
+
+        return mapper.toResponse(
+                medicine
+        );
+
+    }
+
+// UPDATE
+
+    public MedicineResponse update(
+
+            Long id,
+
+            MedicineRequest request
+
+    ) {
+
+        Medicine medicine =
+
+                repo.findById(id)
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
+                                        "Medicine not found"
+                                )
+
+                        );
+
+        medicine.setName(
+                request.getName()
+        );
+
+        medicine.setUnit(
+                request.getUnit()
+        );
+
+        medicine.setManufacturer(
+                request.getManufacturer()
+        );
+
+        medicine.setStockQuantity(
+                request.getStockQuantity()
+        );
+
+        medicine.setPrice(
+                request.getPrice()
+        );
+
+        medicine.setDescription(
+                request.getDescription()
+        );
+
+        return mapper.toResponse(
+
+                repo.save(
+                        medicine
+                )
+
+        );
+
+    }
+
+// UPDATE STOCK
+
+    public MedicineResponse updateStock(
+
+            Long id,
+
+            UpdateStockRequest request
+
+    ) {
+
+        Medicine medicine =
+
+                repo.findById(id)
+
+                        .orElseThrow(
+
+                                () -> new ResourceNotFoundException(
                                         "Medicine not found"
                                 )
 
@@ -170,12 +248,11 @@ public class MedicineService {
 
     }
 
-
-    // DELETE
+// DELETE
 
     public void delete(
             Long id
-    ){
+    ) {
 
         Medicine medicine =
 
@@ -183,7 +260,7 @@ public class MedicineService {
 
                         .orElseThrow(
 
-                                ()->new ResourceNotFoundException(
+                                () -> new ResourceNotFoundException(
                                         "Medicine not found"
                                 )
 
@@ -198,5 +275,4 @@ public class MedicineService {
         );
 
     }
-
 }

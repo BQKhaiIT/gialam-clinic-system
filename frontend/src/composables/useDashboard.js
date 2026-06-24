@@ -16,7 +16,6 @@ export const useDashboard = () => {
     quickActions,
     recentAppointments,
     statsCards,
-    systemHealth,
   } = storeToRefs(dashboardStore)
 
   const refreshDashboard = async () => {
@@ -41,6 +40,5 @@ export const useDashboard = () => {
     recentAppointments,
     refreshDashboard,
     statsCards,
-    systemHealth,
   }
 }

@@ -6,6 +6,7 @@ import Doctors from '@/views/admin/Doctors.vue'
 import MedicalRecords from '@/views/admin/MedicalRecords.vue'
 import Patients from '@/views/admin/Patients.vue'
 import Prescriptions from '@/views/admin/Prescriptions.vue'
+import PharmacyInventory from '@/views/admin/PharmacyInventory.vue'
 
 import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
@@ -19,7 +20,6 @@ const router = createRouter({
       name: 'register',
       component: Register,
     },
-
     {
       path: '/login',
       name: 'login',
@@ -56,12 +56,16 @@ const router = createRouter({
       component: MedicalRecords,
     },
 
-    // PRESCRIPTIONS
-
     {
       path: '/prescriptions',
       name: 'prescriptions',
       component: Prescriptions,
+    },
+
+    {
+      path: '/pharmacy',
+      name: 'pharmacy',
+      component: PharmacyInventory,
     },
   ],
 })

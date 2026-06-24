@@ -79,13 +79,6 @@ const DEFAULT_DEPARTMENT_PERFORMANCE = [
   { name: 'ENT', value: 58 },
 ]
 
-const DEFAULT_SYSTEM_HEALTH = {
-  cpu: 32,
-  memory: 61,
-  storage: 47,
-  apiStatus: 'Online',
-  uptime: '99.9% Uptime',
-}
 
 const getNestedValue = (source, path) =>
   path.split('.').reduce((currentValue, key) => currentValue?.[key], source)
@@ -221,7 +214,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const medicines = ref([])
   const medicalRecords = ref([])
   const departmentPerformance = ref(DEFAULT_DEPARTMENT_PERFORMANCE)
-  const systemHealth = ref(DEFAULT_SYSTEM_HEALTH)
   const quickActions = ref(QUICK_ACTIONS)
 
   const totalPatients = computed(
@@ -422,7 +414,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
     quickActions,
     recentAppointments,
     statsCards,
-    systemHealth,
     todayAppointmentsCount,
     totalPatients,
   }

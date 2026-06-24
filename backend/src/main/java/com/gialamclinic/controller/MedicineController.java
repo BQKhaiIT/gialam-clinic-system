@@ -1,4 +1,5 @@
 package com.gialamclinic.controller;
+
 import com.gialamclinic.dto.request.*;
 import com.gialamclinic.dto.response.*;
 import com.gialamclinic.service.MedicineService;
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @CrossOrigin
 public class MedicineController {
+
     private final MedicineService service;
 
     @PostMapping
-    public ApiResponse<MedicineResponse> create (
+    public ApiResponse<MedicineResponse> create(
             @RequestBody
             @Valid
             MedicineRequest request
@@ -28,7 +30,6 @@ public class MedicineController {
                         service.create(request)
                 )
                 .build();
-
     }
 
     @GetMapping
@@ -37,18 +38,21 @@ public class MedicineController {
                     defaultValue = "0"
             )
             int page,
+
             @RequestParam(
                     defaultValue = "10"
             )
             int size
-    ){
+    ) {
         return ApiResponse
                 .<Page<MedicineResponse>>builder()
                 .success(true)
                 .message("Medicine fetched")
                 .data(
                         service.getAll(
-                                page, size)
+                                page,
+                                size
+                        )
                 )
                 .build();
     }
@@ -57,15 +61,17 @@ public class MedicineController {
     public ApiResponse<Page<MedicineResponse>> search(
             @RequestParam
             String keyword,
+
             @RequestParam(
                     defaultValue = "0"
             )
             int page,
+
             @RequestParam(
                     defaultValue = "10"
             )
             int size
-    ){
+    ) {
         return ApiResponse
                 .<Page<MedicineResponse>>builder()
                 .success(true)
@@ -79,10 +85,46 @@ public class MedicineController {
                 )
                 .build();
     }
-    @PutMapping("/{id}/stock")
-    public ApiResponse<MedicineResponse>
 
-    updateStock(
+    @GetMapping("/{id}")
+    public ApiResponse<MedicineResponse> getById(
+            @PathVariable
+            Long id
+    ) {
+        return ApiResponse
+                .<MedicineResponse>builder()
+                .success(true)
+                .message("Medicine fetched")
+                .data(
+                        service.getById(id)
+                )
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<MedicineResponse> update(
+            @PathVariable
+            Long id,
+
+            @RequestBody
+            @Valid
+            MedicineRequest request
+    ) {
+        return ApiResponse
+                .<MedicineResponse>builder()
+                .success(true)
+                .message("Medicine updated")
+                .data(
+                        service.update(
+                                id,
+                                request
+                        )
+                )
+                .build();
+    }
+
+    @PutMapping("/{id}/stock")
+    public ApiResponse<MedicineResponse> updateStock(
 
             @PathVariable
             Long id,
@@ -90,7 +132,7 @@ public class MedicineController {
             @RequestBody
             UpdateStockRequest request
 
-    ){
+    ) {
 
         return ApiResponse
                 .<MedicineResponse>builder()
@@ -112,14 +154,13 @@ public class MedicineController {
 
     }
 
-
     @DeleteMapping("/{id}")
     public ApiResponse<Object> delete(
 
             @PathVariable
             Long id
 
-    ){
+    ) {
 
         service.delete(
                 id

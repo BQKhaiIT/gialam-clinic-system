@@ -30,9 +30,9 @@ export const ADMIN_SIDEBAR_ITEMS = Object.freeze([
   { id: 'pharmacy', label: 'Pharmacy Inventory', icon: markRaw(Package2), to: '/pharmacy' },
   { id: 'laboratory', label: 'Laboratory', icon: markRaw(FlaskConical), to: '/laboratory' },
   { id: 'staff', label: 'Staff Management', icon: markRaw(BriefcaseMedical), to: '/staff' },
-  { id: 'reports', label: 'Reports & Analytics', icon: markRaw(BarChart3), to: '/reports' },
-  { id: 'audit', label: 'Audit Logs', icon: markRaw(ShieldCheck), to: '/audit' },
-  { id: 'settings', label: 'System Settings', icon: markRaw(Settings), to: '/settings' },
+  // { id: 'reports', label: 'Reports & Analytics', icon: markRaw(BarChart3), to: '/reports' },
+  // { id: 'audit', label: 'Audit Logs', icon: markRaw(ShieldCheck), to: '/audit' },
+  // { id: 'settings', label: 'System Settings', icon: markRaw(Settings), to: '/settings' },
   {
     id: 'logout',
     label: 'Logout',

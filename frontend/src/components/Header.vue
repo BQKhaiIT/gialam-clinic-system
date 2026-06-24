@@ -33,16 +33,6 @@ defineEmits(['toggle-sidebar'])
     </div>
 
     <div class="flex items-center gap-2.5 lg:gap-3.5">
-      <label class="glass-input relative hidden h-[40px] sm:block sm:w-[250px] lg:w-[290px]">
-        <Search
-          class="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400"
-        />
-        <input
-          type="text"
-          class="block h-full w-full border-0 bg-transparent pl-11 pr-4 text-[13px] leading-none text-slate-700 placeholder:text-slate-400 focus:outline-none"
-          placeholder="Search..."
-        />
-      </label>
 
       <button
         type="button"

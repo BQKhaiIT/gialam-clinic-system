@@ -119,11 +119,3 @@ export const quickActions = [
   { label: 'Prescribe', icon: markRaw(ClipboardPenLine) },
   { label: 'Restock', icon: markRaw(PackagePlus) },
 ]
-
-export const systemHealth = {
-  cpu: 32,
-  memory: 78,
-  storage: 45,
-  apiStatus: 'Online',
-  uptime: '99.9% Uptime',
-}
