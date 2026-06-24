@@ -24,17 +24,13 @@ const {
   recentAppointments,
   refreshDashboard,
   statsCards,
+  completedAppointmentsCount,
+  inProgressAppointmentsCount,
 } = useDashboard()
 
 const hasRecentAppointments = computed(() => recentAppointments.value.length > 0)
 const isTrendEmpty = computed(() => patientVisitTrend.value.values.every((value) => value === 0))
-const inProgressAppointments = computed(
-  () => recentAppointments.value.filter((item) => item.status === 'IN_PROGRESS').length,
-)
 
-const completedAppointments = computed(
-  () => recentAppointments.value.filter((item) => item.status === 'COMPLETED').length,
-)
 </script>
 
 <template>
@@ -71,9 +67,8 @@ const completedAppointments = computed(
       <div class="grid gap-4 md:grid-cols-2">
         <div class="rounded-2xl bg-white p-5 shadow-sm">
           <p class="text-sm text-slate-500">In Progress Examinations</p>
-
           <h3 class="mt-2 text-3xl font-bold text-violet-600">
-            {{ inProgressAppointments }}
+            {{ inProgressAppointmentsCount }}
           </h3>
         </div>
 
@@ -81,7 +76,7 @@ const completedAppointments = computed(
           <p class="text-sm text-slate-500">Completed Appointments</p>
 
           <h3 class="mt-2 text-3xl font-bold text-emerald-600">
-            {{ completedAppointments }}
+            {{ completedAppointmentsCount }}
           </h3>
         </div>
       </div>

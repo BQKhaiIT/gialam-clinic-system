@@ -79,7 +79,6 @@ const DEFAULT_DEPARTMENT_PERFORMANCE = [
   { name: 'ENT', value: 58 },
 ]
 
-
 const getNestedValue = (source, path) =>
   path.split('.').reduce((currentValue, key) => currentValue?.[key], source)
 
@@ -175,19 +174,22 @@ const normalizeStatus = (status) => {
     .trim()
     .toUpperCase()
 
-  if (normalizedStatus === 'COMPLETED') {
-    return 'Completed'
-  }
+  switch (normalizedStatus) {
+    case 'COMPLETED':
+      return 'COMPLETED'
 
-  if (normalizedStatus === 'CANCELLED' || normalizedStatus === 'CANCELED') {
-    return 'Cancelled'
-  }
+    case 'PENDING':
+      return 'PENDING'
 
-  if (normalizedStatus === 'PENDING') {
-    return 'Pending'
-  }
+    case 'IN_PROGRESS':
+      return 'IN_PROGRESS'
 
-  return normalizedStatus.charAt(0) + normalizedStatus.slice(1).toLowerCase()
+    case 'CANCELLED':
+      return 'CANCELLED'
+
+    default:
+      return normalizedStatus
+  }
 }
 
 const normalizeDisplayName = (value, fallbackValue) => {
@@ -217,10 +219,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const quickActions = ref(QUICK_ACTIONS)
 
   const totalPatients = computed(
-  () =>
-  patientsResponseMeta.value?.totalElements
-  ??
-  patients.value.length
+    () => patientsResponseMeta.value?.totalElements ?? patients.value.length,
   )
 
   const normalizedAppointments = computed(() =>
@@ -269,7 +268,19 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   const pendingAppointmentsCount = computed(
     () =>
-      normalizedAppointments.value.filter((appointment) => appointment.status === 'Pending').length,
+      normalizedAppointments.value.filter((appointment) => appointment.status === 'PENDING').length,
+  )
+
+  const completedAppointmentsCount = computed(
+    () =>
+      normalizedAppointments.value.filter((appointment) => appointment.status === 'COMPLETED')
+        .length,
+  )
+
+  const inProgressAppointmentsCount = computed(
+    () =>
+      normalizedAppointments.value.filter((appointment) => appointment.status === 'IN_PROGRESS')
+        .length,
   )
 
   const patientVisitTrend = computed(() => {
@@ -371,10 +382,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       const [patientsResponse, appointmentsResponse, medicinesResponse, medicalRecordsResponse] =
         await Promise.all([getPatients(), getAppointments(), getMedicines(), getMedicalRecords()])
 
-      patientsResponseMeta.value =
-        patientsResponse?.data
-        ??
-        patientsResponse
+      patientsResponseMeta.value = patientsResponse?.data ?? patientsResponse
 
       patients.value = extractCollection(patientsResponse)
       appointments.value = extractCollection(appointmentsResponse)
@@ -416,5 +424,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
     statsCards,
     todayAppointmentsCount,
     totalPatients,
+    completedAppointmentsCount,
+    inProgressAppointmentsCount,
+    pendingAppointmentsCount,
   }
 })
